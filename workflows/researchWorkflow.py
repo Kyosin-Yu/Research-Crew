@@ -8,18 +8,21 @@ from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-def create_research_tasks(topic: str) -> tuple:
+def create_research_tasks(topic: str, past_context: str = "") -> tuple:
     """
-    Creates all 4 tasks and their assigned agents for a research topic.
-    Returns a tuple of (task, agents) ready for the Crew.
-
-    Args:
-    topic : The research topic provided by user.
-
-    Returns:
-    tuple: (list of tasks, list of agents)
+    Creates all 4 tasks and their assigned agents for a research topic. Now accepts optional past_context from memory
     """
-    logger.info(f"Creating research workflow for topic {topic}")
+    logger.info(f"Creating research workflow for topic: '{topic}'")
+
+    #build memory context block if available
+    memory_block = ""
+    if past_context:
+        memory_block = (
+            f"\n\nRELEVANT PAST RESEARCH AVAILABLE:\n"
+            f"{past_context}\n"
+            f"USe this as additional context but still conduct fresh research.\n"
+        )
+
 
     #Create agents
     researcher = create_researcher()
@@ -32,6 +35,7 @@ def create_research_tasks(topic: str) -> tuple:
         description=(
             f"Conduct comprehensive research on the following topic:\n\n{topic}\n\n"
             f"TOPIC: {topic}\n\n"
+            f"{memory_block}"
             f"Your research MUST include:\n"
             f"1. Search for at least 3 different angles of this topics\n"
             f"2. Scrape and read at least 3 full articles\n"
@@ -51,20 +55,18 @@ def create_research_tasks(topic: str) -> tuple:
     #task 2 - analysis
     analysis_task = Task(
         description = (
-            f"Write a comprehensive, well-structured research report "
-            f"about '{topic}' based on the analysis provided.\n\n"
-            f"Your report MUST:\n"
-            f"1. Start with an executive summary (150-200 words)\n"
-            f"2. Include a proper introduction with context\n"
-            f"3. Cover all major themes identified in the analysis\n"
-            f"4. Include relevant statistics and cite sources\n"
-            f"5. End with a conclusion and key takeaways\n"
-            f"6. Be formatted in clean, professional Markdown\n"
-            f"7. Be between 800-1200 words\n\n"
+            f"Analyze the raw research findings about '{topic}' "
+            f"produced by the Researcher.\n\n"
+            f"Your analysis MUST include:\n"
+            f"1. Identify the 5 most important themes or findings\n"
+            f"2. Evaluate the credibility of sources\n"
+            f"3. Highlight key statistics and data points\n"
+            f"4. Note any contradictions or debates in the research\n"
+            f"5. Suggest a logical structure for the final report\n\n"
             f"IMPORTANT: You MUST call the 'Write File' tool to save your "
-            f"report before finishing. Use filename='final_report.md' and "
-            f"subfolder='reports'. Do not give your final answer until "
-            f"the file is saved successfully."
+            f"analysis before finishing. Use filename='analysis.md' and "
+            f"subfolder='raw'. Do not give your final answer until the file "
+            f"is saved successfully."
         ),
         expected_output = (
             "Confirmation that 'analysis.md' was saved to output/raw/, "
