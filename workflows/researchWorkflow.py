@@ -38,12 +38,12 @@ def create_research_tasks(topic: str) -> tuple:
             f"3. Gather key facts, statistics, and quotes with source URLs\n"
             f"4. Indentify any conflicting information or debates\n"
             f"5. Note the most credible and recent sources\n\n"
-            f"Save your raw findings to a file named 'raw_research.md in the 'raw' subfolder."
+            f"IMPORTANT: You MUST call the 'Write File' tool to save your findings before finishing. "
+            f"Use filename='raw_research.md' and 'subfolder='raw'. Do not give your final answer until the file is saved successfully."
         ),
         expected_output=(
-            "A comprehensive research document saved as 'raw_research.md' "
-            "containing: key findings organized by theme, source URLs for every fact, relevant statistics abd quotes, "
-            "and any conflicting information found. Minimum 500 words of gathered content."
+            "Confirmation that 'raw_research.md' was saved to output/raw/, "
+            "plus a brief summary of the key findings discovered."
         ),
         agent = researcher,
     )
@@ -51,21 +51,24 @@ def create_research_tasks(topic: str) -> tuple:
     #task 2 - analysis
     analysis_task = Task(
         description = (
-            f"Analysis the raw research findings about '{topic}' "
-            f"produced by the Researcher.\n\n"
-            f"Your analysis MUST include:\n"
-            f"1. Identify the 5 most important themes or findings\n"
-            f"2. Evaluate the credibility of sources\n"
-            f"3. Highlight key statistics and data points\n"
-            f"4. Note any contradictions or debates in the research\n"
-            f"5. Suggest a logical structure for the final report\n\n"
-            f"Save your structured analysis to a file named 'analysis.md' in the 'raw' subfolder."
+            f"Write a comprehensive, well-structured research report "
+            f"about '{topic}' based on the analysis provided.\n\n"
+            f"Your report MUST:\n"
+            f"1. Start with an executive summary (150-200 words)\n"
+            f"2. Include a proper introduction with context\n"
+            f"3. Cover all major themes identified in the analysis\n"
+            f"4. Include relevant statistics and cite sources\n"
+            f"5. End with a conclusion and key takeaways\n"
+            f"6. Be formatted in clean, professional Markdown\n"
+            f"7. Be between 800-1200 words\n\n"
+            f"IMPORTANT: You MUST call the 'Write File' tool to save your "
+            f"report before finishing. Use filename='final_report.md' and "
+            f"subfolder='reports'. Do not give your final answer until "
+            f"the file is saved successfully."
         ),
         expected_output = (
-            "A structured analysis document saved as 'analysis.md' "
-            "containing: top 5 themes with supporting evidence, "
-            "credibility assessment of sources, key statistics, "
-            "identified contradictions, and a proposed report outline."
+            "Confirmation that 'analysis.md' was saved to output/raw/, "
+            "plus a brief summary of the top themes identified."
         ),
         agent = analyzer,
         context = [research_task], #analyzer see researcher output
@@ -87,11 +90,8 @@ def create_research_tasks(topic: str) -> tuple:
             f"Save the reports as 'final_report.md' in the 'reports' subfolder."
         ),
         expected_output = (
-            "A polished, professional Markdown report saved as "
-            "'final_report.md' with: executive summary, introduction, "
-            "themed sections with evidence, conclusion, and key takeaways. "
-            "Between 800-1200 words, properly formatted with headers "
-            "and bullet points."
+            "Confirmation that 'final_report.md' was saved to output/reports/, "
+            "plus the full report content in Markdown format."
         ),
         agent = writer,
         context = [research_task, analysis_task], #writer see both analyzer and researcher output
@@ -113,10 +113,8 @@ def create_research_tasks(topic: str) -> tuple:
             f"Also provide a brief review summary of what you changed."
         ),
         expected_output=(
-            "A final reviewed and improved report saved as "
-            "'reviewed_report.md', plus a review summary explaining "
-            "what changes were made and confirming the report meets "
-            "quality standards."
+            "Confirmation that 'reviewed_report.md' was saved to output/reports/, "
+            "plus a summary of improvements made to the report."
         ),
         agent = reviewer,
         context = [research_task, analysis_task, writing_task],
