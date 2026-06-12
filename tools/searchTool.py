@@ -54,6 +54,10 @@ class WebSearchTool(BaseTool):
             logger.error(f"Search request failed: {e}")
             return f"ERROR: Search failed - {str(e)}"
 
+        except Exception as e:
+            logger.error(f"Unexpected error during search: {e}")
+            return f"ERROR: Search failed - {str(e)}"
+
         #Parse results
         try:
             data = response.json()
